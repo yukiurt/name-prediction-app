@@ -1,0 +1,17 @@
+# Use the official R Shiny base image
+FROM rocker/shiny:latest
+
+# Set a working directory inside the container
+WORKDIR /srv/shiny-server
+
+# Install R package dependencies
+RUN R -e "install.packages(c('shiny', 'bslib', 'jsonlite', 'httr', 'ggplot2', 'dplyr', 'readr'))"
+
+# Copy all local files (including app.R and any CSVs) to the working directory
+COPY . .
+
+# Expose port 8080 (used by shiny::runApp)
+EXPOSE 8080
+
+# Run the Shiny app
+CMD ["R", "-e", "shiny::runApp('/srv/shiny-server', host='0.0.0.0', port=as.numeric(Sys.getenv('PORT', 8080)))"]
